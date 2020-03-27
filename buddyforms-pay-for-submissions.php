@@ -1,9 +1,8 @@
 <?php
-
 /**
  * Plugin Name: BuddyForms Pay For Submissions
  * Plugin URI: https://themekraft.com/products/
- * Description:
+ * Description: This is a temporary description
  * Version: 1.0.0
  * Author: ThemeKraft Team
  * Author URI: https://themekraft.com/
