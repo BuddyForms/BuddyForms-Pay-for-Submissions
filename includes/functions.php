@@ -129,9 +129,11 @@ function buddyforms_pay_for_submissions_transition_post_status( $new_status, $ol
 		return;
 	}
 
-	if (  $old_status !== 'bf-pending-payment') {
+	if ( $old_status !== 'bf-pending-payment' ) {
 		return;
 	}
+
+	buddyforms_switch_to_form_blog( $form_slug );
 
 	if ( empty( $form_slug ) ) {
 		$form_slug = get_post_meta( $post->ID, '_bf_form_slug', true );
@@ -151,6 +153,10 @@ function buddyforms_pay_for_submissions_transition_post_status( $new_status, $ol
 		foreach ( $buddyforms[ $form_slug ]['mail_submissions'] as $notification ) {
 			buddyforms_send_mail_submissions( $notification, $post );
 		}
+	}
+
+	if ( buddyforms_is_multisite() ) {
+		restore_current_blog();
 	}
 }
 

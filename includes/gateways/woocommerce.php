@@ -86,11 +86,16 @@ function buddyforms_pay_for_submissions_on_process_complete( $order_id, $from, $
 				if ( empty( $buddyforms[ $form_slug ] ) ) {
 					return;
 				}
+				buddyforms_switch_to_form_blog( $form_slug );
 				$form_options_status = ! empty( $buddyforms[ $form_slug ]['status'] ) ? $buddyforms[ $form_slug ]['status'] : 'publish';
 				wp_update_post( array(
 					'ID'          => $target_post,
 					'post_status' => $form_options_status
 				) );
+
+				if ( buddyforms_is_multisite() ) {
+					restore_current_blog();
+				}
 			}
 		}
 	}
