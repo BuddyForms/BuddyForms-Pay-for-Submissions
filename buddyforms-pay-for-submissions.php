@@ -54,9 +54,9 @@ class BuddyFormsPayForSubmissions {
 	 * @since 0.1
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'includes' ) );
 		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 		$this->load_constants();
+		$this->includes();
 	}
 
 	/**
@@ -102,6 +102,7 @@ class BuddyFormsPayForSubmissions {
 		if ( self::is_buddy_form_active() ) {
 			$freemius = self::get_freemius();
 			if ( ! empty( $freemius ) && $freemius->is_paying_or_trial() ) {
+				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'gateways/woocommerce.php';
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'form-elements.php';
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'functions.php';
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'shortcode.php';
