@@ -90,6 +90,12 @@ class BuddyFormsPayForSubmissions {
 		return is_plugin_active( 'buddyforms-premium/BuddyForms.php' );
 	}
 
+	public static function is_woocommerce_active() {
+		return in_array( 
+			'woocommerce/woocommerce.php', 
+			apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) 
+		); 
+	}
 
 	/**
 	 * Include files needed by BuddyForms
@@ -109,6 +115,10 @@ class BuddyFormsPayForSubmissions {
 		} else {
 			add_action( 'admin_notices', array( $this, 'need_buddyforms' ) );
 		}
+
+		if ( ! self::is_woocommerce_active() ) {
+			add_action( 'admin_notices', array( $this, 'need_woocommerce' ) );
+		}
 	}
 
 	/**
@@ -122,6 +132,12 @@ class BuddyFormsPayForSubmissions {
 
 	public function need_buddyforms() {
 		self::admin_notice();
+	}
+
+	public function need_woocommerce() {
+		self::admin_notice(
+			'<b>Oops...</b> BuddyForms Pay For Submissions cannot run without <b>WooCommerce</b>.'
+		);
 	}
 
 	/**
