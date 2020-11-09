@@ -77,6 +77,14 @@ function buddyforms_pay_for_submissions_is_trigger_status( $form_slug ) {
 	return false;
 }
 
+
+/**
+ * Check if the post was already paid
+ */
+function buddyforms_pay_for_submission_is_paid( $post_id ) {
+	return get_post_meta( (int) $post_id, 'bf_pay_for_submission_is_paid', true ) === 'paid';
+}
+
 /**
  * Change the post status if the pay submission is enabled for this form and the current status is the status setup in the form
  *
@@ -89,7 +97,9 @@ function buddyforms_pay_for_submissions_create_edit_form_post_status( $post_stat
 	global $buddyforms;
 	if ( ! empty( $buddyforms ) && ! empty( $form_slug ) ) {
 		$target_status = buddyforms_pay_for_submissions_form_status( $form_slug );
-		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $target_status === $post_status ) {
+		$post_id 	   = isset( $_POST['post_id'] ) ? $_POST['post_id'] : false;
+		$is_paid 	   = buddyforms_pay_for_submission_is_paid( $post_id );
+		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $target_status === $post_status && ! $is_paid ) {
 			return 'bf-pending-payment';
 		}
 	}
@@ -103,7 +113,8 @@ function buddyforms_pay_for_submissions_trigger_mail_submission( $continue, $pos
 	global $buddyforms;
 	if ( ! empty( $buddyforms ) && ! empty( $form_slug ) ) {
 		$is_trigger_status = buddyforms_pay_for_submissions_is_trigger_status( $form_slug );
-		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status ) {
+		$is_paid 		   = buddyforms_pay_for_submission_is_paid( $post_id );
+		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status && ! $is_paid ) {
 			return false;
 		}
 	}
