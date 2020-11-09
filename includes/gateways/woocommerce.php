@@ -13,8 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 function buddyforms_pay_for_submissions_after_submit_end( $args ) {
 	if ( ! empty( $args ) && ! empty( $args['form_slug'] ) ) {
 		$form_slug         = $args['form_slug'];
-		$is_trigger_status = buddyforms_pay_for_submissions_is_trigger_status( $form_slug );
-		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status ) {
+		$is_trigger_status = buddyforms_pay_for_submissions_is_trigger_status( $form_slug );		
+		$post_id 		   = false;
+
+		if ( isset( $args['post_id'] ) && ! empty( $args['post_id'] )  ) {
+			$post_id = $args['post_id'];
+			
+		} elseif ( isset( $_POST['post_id'] ) && ! empty( $_POST['post_id'] ) ) {
+			$post_id = $_POST['post_id'];
+		}
+
+		$is_paid = buddyforms_pay_for_submission_is_paid( $post_id );
+
+		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status && ! $is_paid ) {
 			$options    = buddyforms_get_form_by_slug( $form_slug );
 			$product_id = ! empty( $options['pay_for_submissions_woo_product'] ) ? $options['pay_for_submissions_woo_product'] : false;
 			if ( ! empty( $product_id ) ) {
@@ -42,7 +53,18 @@ function buddyforms_pay_for_submissions_ajax_process_edit_post_json_response( $a
 	if ( ! empty( $args ) ) {
 		$form_slug         = $args['form_slug'];
 		$is_trigger_status = buddyforms_pay_for_submissions_is_trigger_status( $form_slug );
-		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status ) {
+		$post_id 		   = false;
+
+		if ( isset( $args['post_id'] ) && ! empty( $args['post_id'] )  ) {
+			$post_id = $args['post_id'];
+			
+		} elseif ( isset( $_POST['post_id'] ) && ! empty( $_POST['post_id'] ) ) {
+			$post_id = $_POST['post_id'];
+		}
+		
+		$is_paid = buddyforms_pay_for_submission_is_paid( $post_id );
+		
+		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status && ! $is_paid ) {
 			$options            = buddyforms_get_form_by_slug( $form_slug );
 			$is_direct_checkout = ! empty( $options['pay_for_submissions_woo_direct_checkout'] );
 			if ( $is_direct_checkout ) {
@@ -90,7 +112,10 @@ function buddyforms_pay_for_submissions_on_process_complete( $order_id, $from, $
 				$form_options_status = ! empty( $buddyforms[ $form_slug ]['status'] ) ? $buddyforms[ $form_slug ]['status'] : 'publish';
 				wp_update_post( array(
 					'ID'          => $target_post,
-					'post_status' => $form_options_status
+					'post_status' => $form_options_status,
+					'meta_input' => array(
+						'bf_pay_for_submission_is_paid' => 'paid',
+					)
 				) );
 
 				if ( buddyforms_is_multisite() ) {
