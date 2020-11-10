@@ -111,6 +111,7 @@ class BuddyFormsPayForSubmissions {
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'form-elements.php';
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'functions.php';
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'shortcode.php';
+				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'admin/metabox-pay-status.php';
 			}
 		} else {
 			add_action( 'admin_notices', array( $this, 'need_buddyforms' ) );
