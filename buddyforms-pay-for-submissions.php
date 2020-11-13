@@ -2,8 +2,8 @@
 /**
  * Plugin Name: BuddyForms Pay For Submissions
  * Plugin URI: https://themekraft.com/products/
- * Description: This is a temporary description
- * Version: 1.0.0
+ * Description: Enable your customers to pay for the submission of any data to your site with BuddyForms and WooCommerce and the Pay For Submissions Extension.
+ * Version: 1.0.1
  * Author: ThemeKraft Team
  * Author URI: https://themekraft.com/
  * License: GPLv2 or later
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BuddyFormsPayForSubmissions {
 
 	public static $include_assets = array();
-	public static $version = '1.0.0';
+	public static $version = '1.0.1';
 	public static $slug = 'buddyforms-pay-for-submissions';
 	/**
 	 * Instance of this class
@@ -91,10 +91,10 @@ class BuddyFormsPayForSubmissions {
 	}
 
 	public static function is_woocommerce_active() {
-		return in_array( 
-			'woocommerce/woocommerce.php', 
-			apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) 
-		); 
+		return in_array(
+			'woocommerce/woocommerce.php',
+			apply_filters( 'active_plugins', get_option( 'active_plugins' ) )
+		);
 	}
 
 	/**
