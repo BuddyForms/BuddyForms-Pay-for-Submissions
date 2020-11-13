@@ -15,14 +15,9 @@
       "email": "gfirem@gmail.com"
     }
   ],
-  "require": {
-    "php": ">=5.2"
-  },
-  "require-dev": {},
-  "scripts": {
-    "package": "sh .tk/package.sh loader",
-    "wp-release": "sh .tk/wp_release.sh",
-    "beta-release": "sh .tk/full-deploy.sh buddyforms-pay-for-submissions 5792 false beta",
-    "full-release": "sh .tk/full-deploy.sh buddyforms-pay-for-submissions 5792 false released"
+	"require": {
+		"php": ">=5.2",
+  	"consolidation/robo": "^1.0.0",
+    "bamarni/composer-bin-plugin": "dev-master"
   }
 }
