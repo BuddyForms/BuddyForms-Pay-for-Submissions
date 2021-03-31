@@ -87,7 +87,7 @@ class BuddyFormsPayForSubmissions {
 	public static function is_buddy_form_active() {
 		self::load_plugins_dependency();
 
-		return is_plugin_active( 'buddyforms-premium/BuddyForms.php' );
+		return is_plugin_active( 'buddyforms-premium/BuddyForms.php' ) || is_plugin_active( 'buddyforms/BuddyForms.php' );
 	}
 
 	public static function is_woocommerce_active() {
