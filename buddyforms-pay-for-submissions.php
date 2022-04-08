@@ -30,10 +30,6 @@
  ****************************************************************************
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
 class BuddyFormsPayForSubmissions {
 
 	public static $include_assets = array();
@@ -84,12 +80,6 @@ class BuddyFormsPayForSubmissions {
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 	}
 
-	public static function is_buddy_form_active() {
-		self::load_plugins_dependency();
-
-		return is_plugin_active( 'buddyforms-premium/BuddyForms.php' ) || is_plugin_active( 'buddyforms/BuddyForms.php' );
-	}
-
 	public static function is_woocommerce_active() {
 		return in_array(
 			'woocommerce/woocommerce.php',
@@ -104,7 +94,7 @@ class BuddyFormsPayForSubmissions {
 	 * @since 1.0
 	 */
 	public function includes() {
-		if ( self::is_buddy_form_active() ) {
+		if ( buddyforms_pay_for_submissions_fs_is_parent_active() ) {
 			$freemius = self::get_freemius();
 			if ( ! empty( $freemius ) && $freemius->is_paying_or_trial() ) {
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'gateways/woocommerce.php';
@@ -317,9 +307,7 @@ function buddyforms_pay_for_submissions_fs_is_parent_active() {
 	}
 
 	foreach ( $active_plugins as $basename ) {
-		if ( 0 === strpos( $basename, 'buddyforms/' ) ||
-		     0 === strpos( $basename, 'buddyforms-premium/' )
-		) {
+		if ( 0 === strpos( strtolower( $basename ), 'buddyforms/' ) || 0 === strpos( strtolower( $basename ), 'buddyforms-premium/' ) ) {
 			return true;
 		}
 	}

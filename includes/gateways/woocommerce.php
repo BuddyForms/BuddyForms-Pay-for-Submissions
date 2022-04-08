@@ -1,10 +1,5 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-
 /**
  * Process the entry after the form is submitted
  *
@@ -28,6 +23,10 @@ function buddyforms_pay_for_submissions_after_submit_end( $args ) {
 		if ( buddyforms_pay_for_submissions_is_enabled( $form_slug ) && $is_trigger_status && ! $is_paid ) {
 			$options    = buddyforms_get_form_by_slug( $form_slug );
 			$product_id = ! empty( $options['pay_for_submissions_woo_product'] ) ? $options['pay_for_submissions_woo_product'] : false;
+			$product = wc_get_product( (int) $product_id );
+			if( isset( $options['pay_for_submissions_is_variable_product'] ) && $product->is_type( 'variable' ) ){
+				$product_id = apply_filters( 'buddyforms_pay_for_submissions_variation_id', $options['pay_for_submissions_is_variable_product'], $form_slug, $product );
+			}
 			if ( ! empty( $product_id ) ) {
 				try {
 					WC()->cart->add_to_cart( $product_id );
