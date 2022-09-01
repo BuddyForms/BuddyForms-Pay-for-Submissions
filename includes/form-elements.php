@@ -72,6 +72,14 @@ function buddyforms_pay_for_submissions_admin_settings_sidebar_metabox_html() {
 		}
 	}
 
+	$pay_for_submissions_moderation = isset( $buddyform['pay_for_submissions_moderation'] ) ? $buddyform['pay_for_submissions_moderation'] : '';
+	$form_setup[]                            = new Element_Checkbox( "<b>" . __( 'After Submission', 'buddyforms-pay-for-submissions' ) . "</b>", "buddyforms_options[pay_for_submissions_moderation]", array( "pay_for_submissions_moderation" => __( "Pay for edit", 'buddyforms-pay-for-submissions' ) ),
+		array(
+			'value' => $pay_for_submissions_moderation,
+			'shortDesc' => __( 'Select this option to charge when the post is edited.', 'buddyforms-pay-for-submissions' )
+		)
+	);
+
 	$pay_for_submissions_woo_direct_checkout = isset( $buddyform['pay_for_submissions_woo_direct_checkout'] ) ? $buddyform['pay_for_submissions_woo_direct_checkout'] : '';
 	$form_setup[]                            = new Element_Checkbox( "<b>" . __( 'Direct Checkout', 'buddyforms-pay-for-submissions' ) . "</b>", "buddyforms_options[pay_for_submissions_woo_direct_checkout]", array( "pay_for_submissions_woo_direct_checkout" => __( "Go direct to checkout", 'buddyforms-pay-for-submissions' ) ),
 		array(

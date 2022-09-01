@@ -64,7 +64,23 @@ function buddyforms_pay_for_submissions_is_trigger_status( $form_slug ) {
 		$setup_status = buddyforms_pay_for_submissions_form_status( $form_slug );
 		if ( ! empty( $setup_status ) ) {
 			//Read the status of the current entry in the request
+
 			$post_status_action = ! empty( $_POST['status'] ) ? $_POST['status'] : 'publish';
+			$buddyform = buddyforms_get_form_by_slug( $form_slug );
+
+			if( isset( $buddyform['pay_for_submissions_moderation'] ) && ! empty( $buddyform['pay_for_submissions_moderation'] ) ){
+				if( get_post_meta( $_POST['post_id'], 'bf_pay_for_edit', true ) === "yes" ){
+					return true;
+				}
+
+				if( $post_status_action === "awaiting-review" ){
+					return false;
+				}
+			}
+
+			if( $post_status_action === "awaiting-review" ){
+				return true;
+			}
 
 			return $setup_status === $post_status_action;
 		}
@@ -73,6 +89,34 @@ function buddyforms_pay_for_submissions_is_trigger_status( $form_slug ) {
 	return false;
 }
 
+add_action( 'buddyforms_after_submission_end', 'pay_for_post_test' );
+function pay_for_post_test( $args ){
+	add_post_meta( $args['ID'], 'bf_pay_for_submission_is_paid', 'unpaid', true );
+}
+
+function on_publish_pending_post( $post ) {
+	$FS = get_post_meta( $post->ID, 'bf_pay_for_submission_is_paid', true );
+	$form_slug = get_post_meta( $post->ID, '_bf_form_slug', true );
+	$buddyform = buddyforms_get_form_by_slug( $form_slug );
+	if( ( get_post_meta( $post->ID, 'bf_pay_for_submission_is_paid', true ) == 'unpaid' && ! isset( $buddyform['pay_for_submissions_moderation'] ) ) || 
+		( isset( $buddyform['pay_for_submissions_moderation'] ) && get_post_meta( $post->ID, 'bf_pay_for_edit', true ) === "yes" ) ){
+		$my_post = array(
+			'ID'           => $post->ID,
+			'post_status'   => 'bf-pending-payment',
+		);
+		wp_update_post( $my_post );
+	}
+}
+add_action(  'awaiting-review_to_publish',  'on_publish_pending_post', 5, 1 );
+
+function on_edit_published_post( $post ) {
+	$form_slug = get_post_meta( $post->ID, '_bf_form_slug', true );
+	$buddyform = buddyforms_get_form_by_slug( $form_slug );
+	if( isset( $buddyform['pay_for_submissions_moderation'] ) && ! empty( $buddyform['pay_for_submissions_moderation'] ) ){
+		add_post_meta( $post->ID, 'bf_pay_for_edit', 'yes', true );
+	}
+}
+add_action(  'publish_to_awaiting-review',  'on_edit_published_post', 5, 1 );
 
 /**
  * Check if the post was already paid
