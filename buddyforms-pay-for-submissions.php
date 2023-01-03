@@ -3,7 +3,7 @@
  * Plugin Name: BuddyForms Pay For Submissions
  * Plugin URI: https://themekraft.com/products/
  * Description: Enable your customers to pay for the submission of any data to your site with BuddyForms and WooCommerce and the Pay For Submissions Extension.
- * Version: 1.0.1
+ * Version: 1.0.3
  * Author: ThemeKraft Team
  * Author URI: https://themekraft.com/
  * License: GPLv2 or later
@@ -30,14 +30,10 @@
  ****************************************************************************
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
 class BuddyFormsPayForSubmissions {
 
 	public static $include_assets = array();
-	public static $version = '1.0.1';
+	public static $version = '1.0.3';
 	public static $slug = 'buddyforms-pay-for-submissions';
 	/**
 	 * Instance of this class
@@ -84,12 +80,6 @@ class BuddyFormsPayForSubmissions {
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 	}
 
-	public static function is_buddy_form_active() {
-		self::load_plugins_dependency();
-
-		return is_plugin_active( 'buddyforms-premium/BuddyForms.php' );
-	}
-
 	public static function is_woocommerce_active() {
 		return in_array(
 			'woocommerce/woocommerce.php',
@@ -104,7 +94,7 @@ class BuddyFormsPayForSubmissions {
 	 * @since 1.0
 	 */
 	public function includes() {
-		if ( self::is_buddy_form_active() ) {
+		if ( buddyforms_pay_for_submissions_fs_is_parent_active() ) {
 			$freemius = self::get_freemius();
 			if ( ! empty( $freemius ) && $freemius->is_paying_or_trial() ) {
 				require_once BUDDYFORMS_PAY_FOR_SUBMISSIONS_INCLUDES_PATH . 'gateways/woocommerce.php';
@@ -280,8 +270,8 @@ if ( ! function_exists( 'buddyforms_pay_for_submissions_fs' ) ) {
 					'has_paid_plans'   => true,
 					'is_org_compliant' => false,
 					'trial'            => array(
-						'days'               => 14,
-						'is_require_payment' => false,
+						'days'               => 7,
+						'is_require_payment' => true,
 					),
 					'parent'           => array(
 						'id'         => '391',
@@ -293,6 +283,7 @@ if ( ! function_exists( 'buddyforms_pay_for_submissions_fs' ) ) {
 						'first-path' => 'plugins.php',
 						'support'    => false,
 					),
+					'bundle_license_auto_activation' => true,
 				) );
 			} catch ( Freemius_Exception $e ) {
 				return false;
@@ -317,9 +308,7 @@ function buddyforms_pay_for_submissions_fs_is_parent_active() {
 	}
 
 	foreach ( $active_plugins as $basename ) {
-		if ( 0 === strpos( $basename, 'buddyforms/' ) ||
-		     0 === strpos( $basename, 'buddyforms-premium/' )
-		) {
+		if ( 0 === strpos( strtolower( $basename ), 'buddyforms/' ) || 0 === strpos( strtolower( $basename ), 'buddyforms-premium/' ) ) {
 			return true;
 		}
 	}

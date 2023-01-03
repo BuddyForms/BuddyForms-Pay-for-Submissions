@@ -1,9 +1,5 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
 function buddyforms_pay_for_submissions_admin_settings_sidebar_metabox() {
 	add_meta_box( 'buddyforms_pay_for_submissions', __( "Pay For Submission", 'buddyforms-pay-for-submissions' ), 'buddyforms_pay_for_submissions_admin_settings_sidebar_metabox_html', 'buddyforms', 'normal', 'low' );
 	add_filter( 'postbox_classes_buddyforms_buddyforms_pay_for_submissions', 'buddyforms_metabox_class' );
@@ -54,6 +50,33 @@ function buddyforms_pay_for_submissions_admin_settings_sidebar_metabox_html() {
 		, array(
 			'value'     => $pay_for_submissions_woo_product,
 			'shortDesc' => __( 'The user will be redirect to this product when submit the form.', 'buddyforms-pay-for-submissions' )
+		)
+	);
+	$selected_product = wc_get_product( (int) $pay_for_submissions_woo_product );
+	if( ! empty( $selected_product ) ){
+		if ( $selected_product->is_type( 'variable' ) ) {
+			$variable_products = [];
+			$variations = $selected_product->get_available_variations();
+			foreach ( $variations as $key => $value ) { 
+				$variation = wc_get_product( (int) $value['variation_id'] );
+				$variable_products[$value['variation_id']] = $variation->get_formatted_name();
+			}
+			$variable_products[null] = 'Please Select';
+			$pay_for_submissions_is_variable_product = isset( $buddyform['pay_for_submissions_is_variable_product'] ) ? $buddyform['pay_for_submissions_is_variable_product'] : '';
+			$form_setup[]                    = new Element_Select( '<b>' . __( 'Product variation', 'buddyforms-pay-for-submissions' ) . '</b>', "buddyforms_options[pay_for_submissions_is_variable_product]",
+			$variable_products
+			, array(
+				'value'     => $pay_for_submissions_is_variable_product,
+				'shortDesc' => __( 'Please select the product variation.', 'buddyforms-pay-for-submissions' )
+			));
+		}
+	}
+
+	$pay_for_submissions_moderation = isset( $buddyform['pay_for_submissions_moderation'] ) ? $buddyform['pay_for_submissions_moderation'] : '';
+	$form_setup[]                            = new Element_Checkbox( "<b>" . __( 'After Submission', 'buddyforms-pay-for-submissions' ) . "</b>", "buddyforms_options[pay_for_submissions_moderation]", array( "pay_for_submissions_moderation" => __( "Pay for edit", 'buddyforms-pay-for-submissions' ) ),
+		array(
+			'value' => $pay_for_submissions_moderation,
+			'shortDesc' => __( 'Select this option to charge when the post is edited.', 'buddyforms-pay-for-submissions' )
 		)
 	);
 
